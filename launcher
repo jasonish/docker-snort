@@ -4,6 +4,7 @@
 
 TAG="jasonish/snort:2.9.7.2"
 CIDFILE="./cid"
+OINKCODE_FILE="./data/etc/oinkcode"
 
 if [ -e ./config ]; then
     . ./config
@@ -24,6 +25,10 @@ prep() {
 	touch data/etc/snort/rules/white_list.rules
     test -e data/etc/snort/rules/black_list.rules || \
 	touch data/etc/snort/rules/black_list.rules
+
+    if [ "${OINKCODE}" ]; then
+	echo "${OINKCODE}" > "${OINKCODE_FILE}"
+    fi
 }
 
 run() {

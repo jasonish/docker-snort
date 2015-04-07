@@ -1,0 +1,6 @@
+# Example configuration file.
+#
+# Copy to ./config and modify as needed.
+
+# Put your oinkcode here for use by PulledPork.
+OINKCODE=YOUR_OINK_CODE
