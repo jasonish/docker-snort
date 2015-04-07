@@ -6,7 +6,6 @@ ENABLESID_CONF=/data/etc/enablesid.conf
 DISABLESID_CONF=/data/etc/disablesid.conf
 DROPSID_CONF=/data/etc/dropsid.conf
 MODIFYSID_CONF=/data/etc/modifysid.conf
-OINKCODE_FILE=/data/etc/oinkcode
 
 RULE_URL="https://www.snort.org/reg-rules/|snortrules-snapshot.tar.gz"
 
@@ -23,11 +22,10 @@ check_for_file() {
     fi
 }
 
-if ! check_for_file ${OINKCODE_FILE}; then
-    echo "error: please put oinkcode in ${OINKCODE_FILE}"
+if [ ! "${OINKCODE}" ]; then
+    echo "error: OINKCODE variable not set."
     exit 1
 else
-    OINKCODE=$(cat ${OINKCODE_FILE})
     PP_ARGS="${PP_ARGS} -u ${RULE_URL}|${OINKCODE}"
 fi
 

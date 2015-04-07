@@ -8,8 +8,7 @@ install.  Just provide your oinkcode.
 ### Download Some Rules
 
 ```
-./launcher prep
-echo <YOUR_OINKCODE> > ./data/etc/oinkcode
+echo OINKCODE=<YOUR_OINKCODE> >> config
 ./launcher run /tools/update-rules
 ```
 

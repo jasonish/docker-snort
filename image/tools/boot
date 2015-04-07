@@ -1,0 +1,11 @@
+#! /bin/sh
+#
+# Entry point script to make sure external volumes are properly prepped.
+
+/tools/prep
+
+if [ ! "$1" ]; then
+   exec /bin/bash
+fi
+
+exec "$@"

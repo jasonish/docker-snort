@@ -8,32 +8,17 @@ OINKCODE_FILE="./data/etc/oinkcode"
 
 if [ -e ./config ]; then
     . ./config
+
+    # Also use the file as a Docker env-file.
+    ENV_FILE="--env-file=./config"
 fi
 
 build() {
     docker build --rm -t ${TAG} image
 }
 
-prep() {
-    mkdir -p data/etc/snort/rules
-    mkdir -p data/var/lib/snort_dynamicrules
-    mkdir -p data/var/log/snort
-    mkdir -p data/var/tmp/snort
-    test -e data/etc/snort/rules/snort.rules || \
-	touch data/etc/snort/rules/snort.rules
-    test -e data/etc/snort/rules/white_list.rules || \
-	touch data/etc/snort/rules/white_list.rules
-    test -e data/etc/snort/rules/black_list.rules || \
-	touch data/etc/snort/rules/black_list.rules
-
-    if [ "${OINKCODE}" ]; then
-	echo "${OINKCODE}" > "${OINKCODE_FILE}"
-    fi
-}
-
 run() {
-    prep
-    docker run -i -t --rm --net=host \
+    docker run -i -t --rm --net=host ${ENV_FILE} \
 	   -v $(pwd)/data:/data \
 	   ${DOCKER_ARGS} ${TAG} "$@"
 }
@@ -45,7 +30,6 @@ usage: $0 <command> [args...]
 commands:
 
     run [command]        - Default to a shell.
-    prep                 - Prepares the container.
     build                - (Re)builds the container.
  
 EOF
@@ -55,11 +39,6 @@ case "$1" in
 
     build)
 	build
-	;;
-
-    prep)
-	set -x
-	prep
 	;;
 
     run)

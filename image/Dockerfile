@@ -26,9 +26,11 @@ COPY /etc/snort/ /etc/snort/
 COPY /tools/ /tools/
 
 # Cleanup.
-# RUN yum clean all && \
-#     rm -rf /var/log/* \
-#     rm -rf /var/tmp/* \
-#     rm -rf /tmp/*
+RUN yum clean all && \
+    rm -rf /var/log/* \
+    rm -rf /var/tmp/* \
+    rm -rf /tmp/*
 
 RUN /usr/sbin/snort -V
+
+ENTRYPOINT ["/tools/boot"]

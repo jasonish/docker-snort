@@ -1,0 +1,18 @@
+#! /bin/sh
+#
+# Prepare the container for normal use.
+
+if [ ! -d /data ]; then
+   echo "error: /data is not mounted as a volume."
+fi
+
+mkdir -p /data/etc/snort/rules
+mkdir -p /data/var/lib/snort_dynamicrules
+mkdir -p /data/var/log/snort
+mkdir -p /data/var/tmp/snort
+test -e /data/etc/snort/rules/snort.rules || \
+    touch /data/etc/snort/rules/snort.rules
+test -e /data/etc/snort/rules/white_list.rules || \
+    touch /data/etc/snort/rules/white_list.rules
+test -e /data/etc/snort/rules/black_list.rules || \
+    touch /data/etc/snort/rules/black_list.rules
