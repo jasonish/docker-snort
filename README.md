@@ -5,6 +5,17 @@ install.  Just provide your oinkcode.
 
 ## Usage
 
+### Checkout This Git Repo
+
+First you should check out this git repository. There is a launcher
+script that should be run instead of running docker directly to make
+sure everything is setup properly. If you need to do further
+customizations, the script can serve as a template.
+
+```
+git clone https://github.com/jasonish/docker-snort.git
+```
+
 ### Download Some Rules
 
 ```
