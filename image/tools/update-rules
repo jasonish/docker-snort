@@ -1,0 +1,51 @@
+#! /bin/sh
+#
+# Wrapper script around pulledpork to update rules.
+
+ENABLESID_CONF=/data/etc/enablesid.conf
+DISABLESID_CONF=/data/etc/disablesid.conf
+DROPSID_CONF=/data/etc/dropsid.conf
+MODIFYSID_CONF=/data/etc/modifysid.conf
+OINKCODE_FILE=/data/etc/oinkcode
+
+RULE_URL="https://www.snort.org/reg-rules/|snortrules-snapshot.tar.gz"
+
+PP_ARGS="/opt/pulledpork/pulledpork.pl -c /etc/pulledpork.conf -P"
+
+check_for_file() {
+    echo -n "Checking for file $1: "
+    if [ -e "$1" ]; then
+	echo "found."
+	return 0
+    else
+	echo "not found."
+	return 1
+    fi
+}
+
+if ! check_for_file ${OINKCODE_FILE}; then
+    echo "error: please put oinkcode in ${OINKCODE_FILE}"
+    exit 1
+else
+    OINKCODE=$(cat ${OINKCODE_FILE})
+    PP_ARGS="${PP_ARGS} -u ${RULE_URL}|${OINKCODE}"
+fi
+
+if check_for_file ${ENABLESID_CONF}; then
+    PP_ARGS="${PP_ARGS} -e ${ENABLESID_CONF}"
+fi
+
+if check_for_file ${DISABLESID_CONF}; then
+    PP_ARGS="${PP_ARGS} -i ${DISABLESID_CONF}"
+fi
+
+if check_for_file ${DROPSID_CONF}; then
+    PP_ARGS="${PP_ARGS} -b ${DROPSID_CONF}"
+fi
+
+if check_for_file ${MODIFYSID_CONF}; then
+    PP_ARGS="${PP_ARGS} -M ${MODIFYSID_CONF}"
+fi
+
+echo "Running ${PP_ARGS}"
+${PP_ARGS}
