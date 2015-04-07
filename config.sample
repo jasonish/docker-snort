@@ -4,3 +4,7 @@
 
 # Put your oinkcode here for use by PulledPork.
 OINKCODE=YOUR_OINK_CODE
+
+# Extra volumes.
+VOLUMES=""
+#VOLUMES="${VOLUMES} -v /var/log/snort:/var/log/snort"

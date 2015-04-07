@@ -20,6 +20,7 @@ build() {
 run() {
     docker run -i -t --rm --net=host ${ENV_FILE} \
 	   -v $(pwd)/data:/data \
+	   ${VOLUMES} \
 	   ${DOCKER_ARGS} ${TAG} "$@"
 }
 
