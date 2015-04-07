@@ -18,7 +18,10 @@ build() {
 }
 
 run() {
-    docker run -i -t --rm --net=host ${ENV_FILE} \
+    if tty > /dev/null; then
+        tty="--tty"
+    fi
+    docker run ${tty} -i --rm --net=host ${ENV_FILE} \
 	   -v $(pwd)/data:/data \
 	   ${VOLUMES} \
 	   ${DOCKER_ARGS} ${TAG} "$@"
