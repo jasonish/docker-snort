@@ -34,3 +34,15 @@ tail -f ./data/var/log/snort/alert
 Note that the above command is run outside of the container. By
 default, Snort will log to /data/var/log/snort, which is mapped into
 the ./data directory on the host.
+
+### Tune Your Rules with Pulled Pork
+
+After you have run the container at least once, you will find the
+basic set of Pulled Pork configuration files in ./data/etc.  Just edit
+these files as you normally would, then run:
+
+```
+./launcher run /tools/update-rules
+```
+
+Then restart Snort.
