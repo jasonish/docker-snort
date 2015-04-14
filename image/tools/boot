@@ -2,7 +2,46 @@
 #
 # Entry point script to make sure external volumes are properly prepped.
 
-/tools/prep
+prepare_snort_files_and_directories() {
+    mkdir -p /data/etc/snort/rules
+    mkdir -p /data/var/lib/snort_dynamicrules
+    mkdir -p /data/var/log/snort
+    mkdir -p /data/var/tmp/snort
+    test -e /data/etc/snort/rules/snort.rules || \
+	touch /data/etc/snort/rules/snort.rules
+    test -e /data/etc/snort/rules/white_list.rules || \
+	touch /data/etc/snort/rules/white_list.rules
+    test -e /data/etc/snort/rules/black_list.rules || \
+	touch /data/etc/snort/rules/black_list.rules
+}
+
+init_pulledpork() {
+    ENABLESID_CONF=/data/etc/enablesid.conf
+    DISABLESID_CONF=/data/etc/disablesid.conf
+    DROPSID_CONF=/data/etc/dropsid.conf
+    MODIFYSID_CONF=/data/etc/modifysid.conf
+
+    if [ ! -e ${ENABLESID_CONF} ]; then
+	cp /opt/pulledpork/etc/$(basename ${ENABLESID_CONF}) ${ENABLESID_CONF}
+    fi
+    if [ ! -e ${DISABLESID_CONF} ]; then
+	cp /opt/pulledpork/etc/$(basename ${DISABLESID_CONF}) ${DISABLESID_CONF}
+    fi
+    if [ ! -e ${DROPSID_CONF} ]; then
+	cp /opt/pulledpork/etc/$(basename ${DROPSID_CONF}) ${DROPSID_CONF}
+    fi
+    if [ ! -e ${MODIFYSID_CONF} ]; then
+	cp /opt/pulledpork/etc/$(basename ${MODIFYSID_CONF}) ${MODIFYSID_CONF}
+    fi
+}
+
+if [ ! -d /data ]; then
+    echo "error: /data is not mounted as a volume"
+    exit 1
+fi
+
+prepare_snort_files_and_directories
+init_pulledpork
 
 if [ ! "$1" ]; then
    exec /bin/bash
