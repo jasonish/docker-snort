@@ -31,6 +31,6 @@ RUN yum clean all && \
     rm -rf /var/tmp/* \
     rm -rf /tmp/*
 
-RUN /usr/sbin/snort -V
-
 ENTRYPOINT ["/tools/boot"]
+
+RUN /usr/sbin/snort -V

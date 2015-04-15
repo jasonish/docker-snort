@@ -7,7 +7,7 @@ DISABLESID_CONF=/data/etc/disablesid.conf
 DROPSID_CONF=/data/etc/dropsid.conf
 MODIFYSID_CONF=/data/etc/modifysid.conf
 
-RULE_URL="https://www.snort.org/reg-rules/|snortrules-snapshot.tar.gz"
+RULE_URL="https://www.snort.org/rules/|snortrules-snapshot.tar.gz"
 
 PP_ARGS="/opt/pulledpork/pulledpork.pl -c /etc/pulledpork.conf -P"
 
