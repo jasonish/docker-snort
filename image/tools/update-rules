@@ -7,9 +7,12 @@ DISABLESID_CONF=/data/etc/disablesid.conf
 DROPSID_CONF=/data/etc/dropsid.conf
 MODIFYSID_CONF=/data/etc/modifysid.conf
 
+BLACKLIST_URL="http://labs.snort.org/feeds/ip-filter.blf"
+
 RULE_URL="https://www.snort.org/rules/|snortrules-snapshot.tar.gz"
 
 PP_ARGS="/opt/pulledpork/pulledpork.pl -c /etc/pulledpork.conf -P"
+PP_ARGS="${PP_ARGS} -u ${BLACKLIST_URL}|IPBLACKLIST|open"
 
 check_for_file() {
     echo -n "Checking for file $1: "
@@ -45,5 +48,5 @@ if check_for_file ${MODIFYSID_CONF}; then
     PP_ARGS="${PP_ARGS} -M ${MODIFYSID_CONF}"
 fi
 
-echo "Running ${PP_ARGS}"
+echo "Running ${PP_ARGS}."
 ${PP_ARGS}
