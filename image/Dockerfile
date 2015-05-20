@@ -1,6 +1,14 @@
 FROM centos:7
 MAINTAINER Jason Ish <ish@unx.ca>
 
+ENV LUAJIT_VERSION 2.0.4
+ENV DAQ_VERSION 2.0.5
+ENV SNORT_VERSION 2.9.7.3
+ENV PKG_CONFIG_PATH /usr/lib/pkgconfig
+
+RUN yum -y install epel-release
+
+# First install runtime dependencies.
 RUN yum -y install \
     perl-libwww-perl \
     perl-Crypt-SSLeay \
@@ -8,12 +16,67 @@ RUN yum -y install \
     perl-Sys-Syslog \
     perl-Switch \
     perl-LWP-Protocol-https \
-    tar
+    tar \
+    libpcap \
+    libpcre \
+    zlib \
+    libdnet \
+    openssl \
+    libnetfilter_queue
 
-RUN yum -y localinstall \
-    https://www.snort.org/downloads/snort/daq-2.0.4.RH7.x86_64.rpm && \
-    yum -y localinstall \
-    https://www.snort.org/downloads/snort/snort-2.9.7.2-1.centos7.x86_64.rpm
+# Install build dependencies separately for easy rollback.
+RUN rpm -qa | sort > /tmp/prebuild-rpms
+RUN yum -y install \
+    	   epel-release \
+    	   gcc \
+    	   kernel-devel \
+	   flex \
+	   bison \
+	   make \
+	   libnetfilter_queue-devel \
+	   zlib-devel \
+	   pcre-devel \
+	   libpcap-devel \
+	   openssl-devel \
+	   libdnet-devel
+RUN rpm -qa | sort > /tmp/postbuild-rpms
+
+RUN cd /tmp && \
+curl -O -L http://luajit.org/download/LuaJIT-${LUAJIT_VERSION}.tar.gz
+RUN cd /tmp && \
+curl -O -L https://www.snort.org/downloads/snort/daq-${DAQ_VERSION}.tar.gz
+RUN cd /tmp && \
+curl -O -L https://www.snort.org/downloads/snort/snort-${SNORT_VERSION}.tar.gz
+    
+RUN cd /tmp && \
+    tar zxvf LuaJIT-${LUAJIT_VERSION}.tar.gz && \
+    cd LuaJIT-${LUAJIT_VERSION} && \
+    make PREFIX=/usr && make install PREFIX=/usr && \
+    ldconfig
+
+RUN cd /tmp && \
+    tar zxvf daq-${DAQ_VERSION}.tar.gz && \
+    cd daq-${DAQ_VERSION} && \
+    ./configure --prefix=/usr && \
+    make && \
+    make install && \
+    ldconfig
+
+RUN cd /tmp && \
+    tar zxvf snort-${SNORT_VERSION}.tar.gz && \
+    cd snort-${SNORT_VERSION} && \
+    ./configure --prefix=/usr \
+    		--enable-sourcefire \
+		--enable-open-appid \
+		--enable-control-socket \
+    && \
+    make && \
+    make install && \
+    mkdir -p /etc/snort && \
+    cp etc/*.conf /etc/snort/ && \
+    cp etc/*.config /etc/snort/ && \
+    cp etc/unicode.map /etc/snort/ && \
+    cp etc/gen-msg.map /etc/snort/
 
 RUN mkdir -p /opt/pulledpork && \
     cd /opt/pulledpork && \
@@ -25,12 +88,16 @@ COPY /etc/pulledpork.conf /etc/
 COPY /etc/snort/ /etc/snort/
 COPY /tools/ /tools/
 
+# Remove build dependencies.
+RUN cd /tmp && \
+    yum -y remove $(diff prebuild-rpms postbuild-rpms | awk '/^>/ { print $2 }')
+
 # Cleanup.
 RUN yum clean all && \
-    rm -rf /var/log/* \
+    rm -rf /var/log/* || true \
     rm -rf /var/tmp/* \
     rm -rf /tmp/*
 
 ENTRYPOINT ["/tools/boot"]
 
-RUN /usr/sbin/snort -V
+RUN /usr/bin/snort -V

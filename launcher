@@ -14,7 +14,7 @@ if [ -e ./config ]; then
 fi
 
 build() {
-    docker build --rm -t ${TAG} image
+    docker build -t ${TAG} image
 }
 
 run() {
