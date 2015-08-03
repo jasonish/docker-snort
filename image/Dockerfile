@@ -70,17 +70,28 @@ RUN cd /tmp && \
 		--enable-open-appid \
 		--enable-control-socket \
     && \
-    make && \
+    make -j4 && \
     make install && \
+    ln -s /usr/lib/snort_dynamicengine /usr/local/lib && \
+    ln -s /usr/lib/snort_dynamicpreprocessor /usr/local/lib && \
     mkdir -p /etc/snort && \
     cp etc/*.conf /etc/snort/ && \
     cp etc/*.config /etc/snort/ && \
     cp etc/unicode.map /etc/snort/ && \
-    cp etc/gen-msg.map /etc/snort/
+    cp etc/gen-msg.map /etc/snort/ && \
+    sed \
+    -e 's#^var RULE_PATH.*#var RULE_PATH /data/etc/snort/rules#' \
+    -e 's#^var WHITE_LIST_PATH.*#var WHITE_LIST_PATH /data/etc/snort/rules#' \
+    -e 's#^var BLACK_LIST_PATH.*#var BLACK_LIST_PATH /data/etc/snort/rules#' \
+    -e 's/^\(include $.*\)/# \1/' \
+    -e 's/^\(dynamicdetection.*\)/# \1/' \
+    -e '$a\\ninclude $RULE_PATH/snort.rules' \
+    -e 's!^# \(config logdir:\)!\1 /data/var/log/snort!' \
+        etc/snort.conf > /etc/snort/snort.conf
 
 RUN mkdir -p /opt/pulledpork && \
     cd /opt/pulledpork && \
-    curl -o - -L https://github.com/shirkdog/pulledpork/archive/master.tar.gz |\
+    curl -o - -L https://github.com/shirkdog/pulledpork/archive/0.7.2.tar.gz |\
       tar zxf - --strip-components=1 && \
     chmod 755 pulledpork.pl
 
