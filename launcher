@@ -2,7 +2,7 @@
 #
 # Docker wrapper script for common commands.
 
-TAG="jasonish/snort:2.9.7.3"
+TAG="jasonish/snort"
 CIDFILE="./cid"
 OINKCODE_FILE="./data/etc/oinkcode"
 

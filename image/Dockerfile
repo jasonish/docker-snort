@@ -2,8 +2,8 @@ FROM centos:7
 MAINTAINER Jason Ish <ish@unx.ca>
 
 ENV LUAJIT_VERSION 2.0.4
-ENV DAQ_VERSION 2.0.5
-ENV SNORT_VERSION 2.9.7.3
+ENV DAQ_VERSION 2.0.6
+ENV SNORT_VERSION 2.9.7.5
 ENV PKG_CONFIG_PATH /usr/lib/pkgconfig
 
 RUN yum -y install epel-release
