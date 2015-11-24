@@ -2,16 +2,18 @@
 #
 # Wrapper script around pulledpork to update rules.
 
-ENABLESID_CONF=/data/etc/enablesid.conf
-DISABLESID_CONF=/data/etc/disablesid.conf
-DROPSID_CONF=/data/etc/dropsid.conf
-MODIFYSID_CONF=/data/etc/modifysid.conf
+PULLEDPORK_CONF=/data/etc/snort/pulledpork.conf
+ENABLESID_CONF=/data/etc/snort/enablesid.conf
+DISABLESID_CONF=/data/etc/snort/disablesid.conf
+DROPSID_CONF=/data/etc/snort/dropsid.conf
+MODIFYSID_CONF=/data/etc/snort/modifysid.conf
 
 BLACKLIST_URL="http://labs.snort.org/feeds/ip-filter.blf"
 
-RULE_URL="https://www.snort.org/rules/|snortrules-snapshot.tar.gz"
+VRT_RULE_URL="https://www.snort.org/rules/|snortrules-snapshot.tar.gz"
+ET_OPEN_RULE_URL="https://rules.emergingthreatspro.com/|emerging.rules.tar.gz"
 
-PP_ARGS="/opt/pulledpork/pulledpork.pl -c /etc/pulledpork.conf -P"
+PP_ARGS="/opt/pulledpork/pulledpork.pl -c ${PULLEDPORK_CONF} -P"
 PP_ARGS="${PP_ARGS} -u ${BLACKLIST_URL}|IPBLACKLIST|open"
 
 check_for_file() {
@@ -26,11 +28,13 @@ check_for_file() {
 }
 
 if [ ! "${OINKCODE}" ]; then
-    echo "error: OINKCODE variable not set."
-    exit 1
+    echo "warning: OINKCODE variable not set: using ET open rules."
+    RULE_URL=${ET_OPEN_RULE_URL}
+    OINKCODE="open"
 else
-    PP_ARGS="${PP_ARGS} -u ${RULE_URL}|${OINKCODE}"
+    RULE_URL=${VRT_RULE_URL}
 fi
+PP_ARGS="${PP_ARGS} -u ${RULE_URL}|${OINKCODE}"
 
 if check_for_file ${ENABLESID_CONF}; then
     PP_ARGS="${PP_ARGS} -e ${ENABLESID_CONF}"

@@ -3,6 +3,10 @@
 # Entry point script to make sure external volumes are properly prepped.
 
 prepare_snort_files_and_directories() {
+    if [ ! -e /data/etc/snort ]; then
+	mkdir -p /data/etc
+	cp -a /etc/snort /data/etc
+    fi
     mkdir -p /data/etc/snort/rules
     mkdir -p /data/var/lib/snort_dynamicrules
     mkdir -p /data/var/log/snort
@@ -16,10 +20,10 @@ prepare_snort_files_and_directories() {
 }
 
 init_pulledpork() {
-    ENABLESID_CONF=/data/etc/enablesid.conf
-    DISABLESID_CONF=/data/etc/disablesid.conf
-    DROPSID_CONF=/data/etc/dropsid.conf
-    MODIFYSID_CONF=/data/etc/modifysid.conf
+    ENABLESID_CONF=/data/etc/snort/enablesid.conf
+    DISABLESID_CONF=/data/etc/snort/disablesid.conf
+    DROPSID_CONF=/data/etc/snort/dropsid.conf
+    MODIFYSID_CONF=/data/etc/snort/modifysid.conf
 
     if [ ! -e ${ENABLESID_CONF} ]; then
 	cp /opt/pulledpork/etc/$(basename ${ENABLESID_CONF}) ${ENABLESID_CONF}
@@ -36,8 +40,7 @@ init_pulledpork() {
 }
 
 if [ ! -d /data ]; then
-    echo "error: /data is not mounted as a volume"
-    exit 1
+    echo "warning: /data is not mounted as a volume"
 fi
 
 prepare_snort_files_and_directories

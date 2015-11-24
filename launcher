@@ -21,7 +21,7 @@ run() {
     if tty > /dev/null; then
         tty="--tty"
     fi
-    exec docker run ${tty} -i --rm --net=host ${ENV_FILE} \
+    exec docker run ${tty} -i --rm --net=host --privileged ${ENV_FILE} \
 	   -v $(pwd)/data:/data \
 	   ${VOLUMES} \
 	   ${DOCKER_ARGS} ${TAG} "$@"
