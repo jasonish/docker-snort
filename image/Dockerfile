@@ -2,7 +2,7 @@ FROM fedora:23
 MAINTAINER Jason Ish <ish@unx.ca>
 
 ENV DAQ_VERSION 2.0.6
-ENV SNORT_VERSION 2.9.7.6
+ENV SNORT_VERSION 2.9.8.2
 
 RUN dnf -y install \
 https://www.snort.org/downloads/snort/daq-${DAQ_VERSION}-1.f21.x86_64.rpm \
