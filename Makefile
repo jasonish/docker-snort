@@ -6,3 +6,6 @@ all:
 	docker run --rm $(IMAGE) snort -V
 	docker tag $(IMAGE) $(IMAGE):latest
 	docker tag $(IMAGE) $(IMAGE):$(TAG)
+
+clean:
+	rm -f *~
