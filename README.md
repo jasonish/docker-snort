@@ -5,15 +5,15 @@ for running Snort in a production/live environment.
 
 ## Building
 
-This Docker image is currently not pushed to any registry, so it must
-be built before use:
-
-    make
+This Docker image is pushed to `hub.docker.com` so the `run.py` tool
+can be used without building, however the image can be rebuilt by
+running `make`.
 
 ## Usage
 
 ```
-usage: run.py [-h] [-l DIR] [-i IFACE] [-r FILE] [-S FILE]
+usage: run.py [-h] [-l DIR] [-i IFACE] [-r FILE] [-S FILE] [--shell]
+              [--etc DIR]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -22,7 +22,29 @@ optional arguments:
   -r FILE               PCAP file to read
   -S FILE, --rules FILE
                         Rule file to load (default empty)
+  --shell               Drop to a shell inside the container instead of
+                        running Snort
+  --etc DIR             Directory to use for /etc/snort (will be populated on
+                        first run)
+
+To provide additional command line options to Snort specify them
+after --
+
+For example:
+
+    ./run.py -r input.pcap -- -k none
 ```
+
+These options will run Snort with the following command line
+arguments:
+
+    -c /etc/snort/snort.conf
+    -i <interface>
+    -r <filename.pcap>
+
+The log directory and rule file options are provided as volumes like:
+- --volume=/path/to/local.rules:/etc/snort/rules/local.rules
+- --volume=/path/to/logdir:/var/log/snort
 
 ## Example
 
@@ -31,3 +53,10 @@ To run Snort over a pcap file `/tmp/test.pcap` using the rules
 
     ./run.py -r /tmp/test.pcap -S /tmp/test.rules -l ./log
     
+## Custom Configuration
+
+Custom configuration files can be provided with the `--etc` command
+line option. If this directory does not contain a `snort.conf`, the
+directory will be populated with the default configuration files. So
+run once to seed the configuration directory, tweak the configuration
+then run again.

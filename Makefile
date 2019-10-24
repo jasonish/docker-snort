@@ -1,11 +1,15 @@
 TAG :=		$(shell awk '/ENV SNORT_VERSION/ { print $$3 }' Dockerfile)
-IMAGE :=	jasonish/snort
+NAME ?=		jasonish/snort
 
 all:
-	docker build -t $(IMAGE) .
-	docker run --rm $(IMAGE) snort -V
-	docker tag $(IMAGE) $(IMAGE):latest
-	docker tag $(IMAGE) $(IMAGE):$(TAG)
+	docker build -t $(NAME) .
+	docker run --rm $(NAME) snort -V
+	docker tag $(NAME) $(NAME):latest
+	docker tag $(NAME) $(NAME):$(TAG)
+
+push:
+	docker push $(NAME):latest
+	docker push $(NAME):$(TAG)
 
 clean:
 	rm -f *~
