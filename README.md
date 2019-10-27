@@ -13,7 +13,7 @@ running `make`.
 
 ```
 usage: run.py [-h] [-l DIR] [-i IFACE] [-r FILE] [-S FILE] [--shell]
-              [--etc DIR]
+              [-v VOL [VOL ...]]
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -24,8 +24,7 @@ optional arguments:
                         Rule file to load (default empty)
   --shell               Drop to a shell inside the container instead of
                         running Snort
-  --etc DIR             Directory to use for /etc/snort (will be populated on
-                        first run)
+  -v VOL [VOL ...]      Additional volumes
 
 To provide additional command line options to Snort specify them
 after --
@@ -55,8 +54,9 @@ To run Snort over a pcap file `/tmp/test.pcap` using the rules
     
 ## Custom Configuration
 
-Custom configuration files can be provided with the `--etc` command
-line option. If this directory does not contain a `snort.conf`, the
-directory will be populated with the default configuration files. So
-run once to seed the configuration directory, tweak the configuration
-then run again.
+A custom configuration can be provided by adding a volume for
+/etc/snort. The directory provided will be populated with the
+configuration from the container on first run, and can then be
+modified for subsequent runs. For example:
+
+    ./run.py -v ./etc:/etc/snort -r /tmp/test.pcap -S /tmp/test.rules -l ./log

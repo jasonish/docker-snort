@@ -59,10 +59,13 @@ def main():
         help="Drop to a shell inside the container instead of running Snort")
 
     parser.add_argument(
-        "--etc", metavar="DIR", default=None,
-        help="Directory to use for /etc/snort (will be populated on first run)")
+        "-v", metavar="VOL", default=[], nargs="+", dest="volumes",
+        help="Additional volumes")
 
-    (args, rem) = parser.parse_known_args()
+    parser.add_argument(
+        "remainder", nargs=argparse.REMAINDER, help=argparse.SUPPRESS)
+
+    args = parser.parse_args()
 
     if not args.shell and args.iface is None and args.pcap is None:
         print("error: either pcap or interface must be specified",
@@ -91,10 +94,10 @@ def main():
             docker_args.append(
                 "--volume=%s:/etc/snort/rules/local.rules" % (abs_rulefile))
 
-    if args.etc:
-        abs_etcpath = os.path.abspath(args.etc)
-        docker_args.append(
-            "--volume=%s:/etc/snort" % (abs_etcpath))
+    for volume in args.volumes:
+        src, target = volume.split(":", 1)
+        abs_src = os.path.abspath(src)
+        docker_args.append("--volume={}:{}".format(abs_src, target))
 
     abs_logdir = os.path.abspath(args.logdir)
     print("Logging to directory: %s" % (abs_logdir))
@@ -108,8 +111,8 @@ def main():
 
     if args.shell:
         docker_args.append("bash")
-    else:
-        docker_args += command_args + rem[1:]
+    elif args.remainder:
+        docker_args += command_args + args.remainder[1:]
 
     # Run...
     print("Running: %s" % str(docker_args))
